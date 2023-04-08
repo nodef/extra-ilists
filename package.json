@@ -1,7 +1,7 @@
 {
-  "name": "extra-lists",
-  "version": "3.1.0",
-  "description": "A collection of functions for operating upon Lists.",
+  "name": "extra-ilists",
+  "version": "3.1.1",
+  "description": "ILists is a pair of key iterable list and value iterable list, with unique keys.",
   "main": "index.js",
   "module": "index.mjs",
   "sideEffects": false,
@@ -17,18 +17,18 @@
   },
   "keywords": [
     "extra",
-    "lists"
+    "ilists"
   ],
   "author": "wolfram77@gmail.com",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/nodef/extra-lists.git"
+    "url": "git+https://github.com/nodef/extra-ilists.git"
   },
   "bugs": {
-    "url": "https://github.com/nodef/extra-lists/issues"
+    "url": "https://github.com/nodef/extra-ilists/issues"
   },
-  "homepage": "https://github.com/nodef/extra-lists#readme",
+  "homepage": "https://github.com/nodef/extra-ilists#readme",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",

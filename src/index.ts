@@ -64,8 +64,8 @@ import {
 
 /** Entries is a list of key-value pairs, with unique keys. */
 export type Entries<K, V> = Iterable<[K, V]>;
-/** Lists is a pair of key list and value list, with unique keys. */
-export type Lists<K, V> = [Iterable<K>, Iterable<V>];
+/** ILists is a pair of key list and value list, with unique keys. */
+export type ILists<K, V> = [Iterable<K>, Iterable<V>];
 
 
 /**
@@ -94,49 +94,49 @@ export type CompareFunction<T> = (a: T, b: T) => number;
 
 
 /**
- * Handle processing of values in lists.
- * @param v value in lists
- * @param k key of value in lists
- * @param x lists containing the value
+ * Handle processing of values in ilists.
+ * @param v value in ilists
+ * @param k key of value in ilists
+ * @param x ilists containing the value
  */
-export type ProcessFunction<K, V> = (v: V, k: K, x: Lists<K, V>) => void;
+export type ProcessFunction<K, V> = (v: V, k: K, x: ILists<K, V>) => void;
 
 
 /**
- * Handle selection of values in lists.
- * @param v value in lists
- * @param k key of value in lists
- * @param x lists containing the value
+ * Handle selection of values in ilists.
+ * @param v value in ilists
+ * @param k key of value in ilists
+ * @param x ilists containing the value
  * @returns selected?
  */
-export type TestFunction<K, V> = (v: V, k: K, x: Lists<K, V>) => boolean;
+export type TestFunction<K, V> = (v: V, k: K, x: ILists<K, V>) => boolean;
 
 
 /**
  * Handle transformation of a value to another.
- * @param v value in lists
- * @param k key of value in lists
- * @param x lists containing the value
+ * @param v value in ilists
+ * @param k key of value in ilists
+ * @param x ilists containing the value
  * @returns transformed value
  */
-export type MapFunction<K, V, W> = (v: V, k: K, x: Lists<K, V>) => W;
+export type MapFunction<K, V, W> = (v: V, k: K, x: ILists<K, V>) => W;
 
 
 /**
  * Handle reduction of multiple values into a single value.
  * @param acc accumulator (temporary result)
- * @param v value in lists
- * @param k key of value in lists
- * @param x lists containing the value
+ * @param v value in ilists
+ * @param k key of value in ilists
+ * @param x ilists containing the value
  * @returns reduced value
  */
-export type ReduceFunction<K, V, W> = (acc: W, v: V, k: K, x: Lists<K, V>) => W;
+export type ReduceFunction<K, V, W> = (acc: W, v: V, k: K, x: ILists<K, V>) => W;
 
 
 /**
- * Handle ending of combined lists.
- * @param dones iᵗʰ lists done?
- * @returns combined lists done?
+ * Handle ending of combined ilists.
+ * @param dones iᵗʰ ilists done?
+ * @returns combined ilists done?
  */
 export type EndFunction = (dones: boolean[]) => boolean;
 
@@ -150,41 +150,41 @@ export type EndFunction = (dones: boolean[]) => boolean;
 // -----
 
 /**
- * Check if value is lists.
+ * Check if value is ilists.
  * @param v value
- * @returns v is lists?
+ * @returns v is ilists?
  */
-export function is<K, V>(v: any): v is Lists<K, V> {
+export function is<K, V>(v: any): v is ILists<K, V> {
   return Array.isArray(v) && v.length===2 && iterableIsList(v[0]) && iterableIsList(v[1]);
 }
 
 
 /**
  * List all keys.
- * @param x lists
+ * @param x ilists
  * @returns k₀, k₁, ... | kᵢ ∈ x[0]
  */
-export function keys<K, V>(x: Lists<K, V>): Iterable<K> {
+export function keys<K, V>(x: ILists<K, V>): Iterable<K> {
   return x[0];
 }
 
 
 /**
  * List all values.
- * @param x lists
+ * @param x ilists
  * @returns v₀, v₁, ... | vᵢ ∈ x[1]
  */
-export function values<K, V>(x: Lists<K, V>): Iterable<V> {
+export function values<K, V>(x: ILists<K, V>): Iterable<V> {
   return x[1];
 }
 
 
 /**
  * List all key-value pairs.
- * @param x lists
+ * @param x ilists
  * @returns [k₀, v₀], [k₁, v₁], ... | kᵢ ∈ x[0]; vᵢ ∈ x[1]
  */
-export function* entries<K, V>(x: Lists<K, V>): Entries<K, V> {
+export function* entries<K, V>(x: ILists<K, V>): Entries<K, V> {
   var iv = values(x)[Symbol.iterator]();
   for (var k of keys(x))
     yield [k, iv.next().value];
@@ -197,11 +197,11 @@ export function* entries<K, V>(x: Lists<K, V>): Entries<K, V> {
 // --------
 
 /**
- * Convert lists to entries.
+ * Convert ilists to entries.
  * @param x entries
- * @returns x as lists
+ * @returns x as ilists
  */
-export function fromEntries<K, V>(x: Entries<K, V>): Lists<K, V> {
+export function fromEntries<K, V>(x: Entries<K, V>): ILists<K, V> {
   var ex = iterableMany(x);
   return [entriesKeys(ex), entriesValues(ex)];
 }
@@ -213,22 +213,22 @@ export function fromEntries<K, V>(x: Entries<K, V>): Lists<K, V> {
 // ----
 
 /**
- * Find the size of lists.
- * @param x lists
+ * Find the size of ilists.
+ * @param x ilists
  * @returns |x|
  */
-export function size<K, V>(x: Lists<K, V>): number {
+export function size<K, V>(x: ILists<K, V>): number {
   return iterableLength(keys(x));
 }
 export {size as length};
 
 
 /**
- * Check if lists is empty.
- * @param x lists
+ * Check if ilists is empty.
+ * @param x ilists
  * @returns |x| = 0?
  */
-export function isEmpty<K, V>(x: Lists<K, V>): boolean {
+export function isEmpty<K, V>(x: ILists<K, V>): boolean {
   return iterableIsEmpty(keys(x));
 }
 
@@ -239,27 +239,27 @@ export function isEmpty<K, V>(x: Lists<K, V>): boolean {
 // -------
 
 /**
- * Compare two lists.
- * @param x lists
- * @param y another lists
+ * Compare two ilists.
+ * @param x ilists
+ * @param y another ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns x=y: 0, otherwise: -ve/+ve
  */
-export function compare<K, V, W=V>(x: Lists<K, V>, y: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): number {
+export function compare<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): number {
   return mapCompare(mapFromLists(x), mapFromLists(y), fc, fm as any);
 }
 
 
 /**
- * Check if two lists are equal.
- * @param x lists
- * @param y another lists
+ * Check if two ilists are equal.
+ * @param x ilists
+ * @param y another ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns x=y?
  */
-export function isEqual<K, V, W=V>(x: Lists<K, V>, y: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
+export function isEqual<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
   return compare(x, y, fc, fm)===0;
 }
 
@@ -271,33 +271,33 @@ export function isEqual<K, V, W=V>(x: Lists<K, V>, y: Lists<K, V>, fc: CompareFu
 
 /**
  * Get value at key.
- * @param x lists
+ * @param x ilists
  * @param k key
  * @returns x[k]
  */
-export function get<K, V>(x: Lists<K, V>, k: K): V {
+export function get<K, V>(x: ILists<K, V>, k: K): V {
   return entriesGet(entries(x), k);
 }
 
 
 /**
  * Gets values at keys.
- * @param x lists
+ * @param x ilists
  * @param ks keys
  * @returns x[k₀], x[k₁], ... | [k₀, k₁, ...] = ks
  */
-export function getAll<K, V>(x: Lists<K, V>, ks: K[]): Iterable<V> {
+export function getAll<K, V>(x: ILists<K, V>, ks: K[]): Iterable<V> {
   return mapGetAll(mapFromLists(x), ks);
 }
 
 
 /**
- * Get value at path in nested lists.
- * @param x nested lists
+ * Get value at path in nested ilists.
+ * @param x nested ilists
  * @param p path
  * @returns x[k₀][k₁][...] | [k₀, k₁, ...] = p
  */
-export function getPath<K>(x: Lists<K, any>, p: K[]): any {
+export function getPath<K>(x: ILists<K, any>, p: K[]): any {
   for (var k of p)
     x = is(x)? get(x, k) : undefined;
   return x;
@@ -305,24 +305,24 @@ export function getPath<K>(x: Lists<K, any>, p: K[]): any {
 
 
 /**
- * Check if nested lists has a path.
- * @param x nested lists
+ * Check if nested ilists has a path.
+ * @param x nested ilists
  * @param p search path
  * @returns x[k₀][k₁][...] exists? | [k₀, k₁, ...] = p
  */
-export function hasPath<T>(x: Lists<T, any>, p: T[]): boolean {
+export function hasPath<T>(x: ILists<T, any>, p: T[]): boolean {
   return getPath(x, p)!==undefined;
 }
 
 
 /**
  * Set value at key.
- * @param x lists
+ * @param x ilists
  * @param k key
  * @param v value
  * @returns x' | x' = x; x'[k] = v
  */
-export function set<K, V>(x: Lists<K, V>, k: K, v: V): Lists<K, V> {
+export function set<K, V>(x: ILists<K, V>, k: K, v: V): ILists<K, V> {
   var ks = [], vs = [];
   for (var [j, u] of entries(x)) {
     ks.push(j);
@@ -334,12 +334,12 @@ export function set<K, V>(x: Lists<K, V>, k: K, v: V): Lists<K, V> {
 
 /**
  * Exchange two values.
- * @param x lists
+ * @param x ilists
  * @param k a key
  * @param l another key
  * @returns x' | x' = x; x'[k] = x[l]; x'[l] = x[k]
  */
-export function swap<K, V>(x: Lists<K, V>, k: K, l: K): Lists<K, V> {
+export function swap<K, V>(x: ILists<K, V>, k: K, l: K): ILists<K, V> {
   var ks = iterableMap(keys(x), j => j===k? l : (j===l? k : j));
   return [ks, values(x)];
 }
@@ -347,11 +347,11 @@ export function swap<K, V>(x: Lists<K, V>, k: K, l: K): Lists<K, V> {
 
 /**
  * Remove value at key.
- * @param x lists
+ * @param x ilists
  * @param k key
  * @returns x - [k, v] | v = x[k]
  */
-export function remove<K, V>(x: Lists<K, V>, k: K): Lists<K, V> {
+export function remove<K, V>(x: ILists<K, V>, k: K): ILists<K, V> {
   var ks = [], vs = [];
   for (var [j, u] of entries(x)) {
     if (j===k) continue;
@@ -368,33 +368,33 @@ export function remove<K, V>(x: Lists<K, V>, k: K): Lists<K, V> {
 // ----
 
 /**
- * Get first entry from lists (default order).
- * @param x lists
+ * Get first entry from ilists (default order).
+ * @param x ilists
  * @param ed default entry
  * @returns [k₀, v₀] if x ≠ Φ else ed | [k₀, v₀] ∈ x
  */
-export function head<K, V>(x: Lists<K, V>, ed: [K, V]=[] as any): [K, V] {
+export function head<K, V>(x: ILists<K, V>, ed: [K, V]=[] as any): [K, V] {
   return iterableHead(entries(x), ed);
 }
 
 
 /**
- * Get lists without its first entry (default order).
- * @param x lists
+ * Get ilists without its first entry (default order).
+ * @param x ilists
  * @returns x \\ \{[k₀, v₀]\} if x ≠ Φ else x | [k₀, v₀] ∈ x
  */
-export function tail<K, V>(x: Lists<K, V>): Lists<K, V> {
+export function tail<K, V>(x: ILists<K, V>): ILists<K, V> {
   return drop(x, 1);
 }
 
 
 /**
  * Keep first n entries only (default order).
- * @param x lists
+ * @param x ilists
  * @param n number of entries [1]
  * @returns \{[k₀, v₀], [k₁, v₁], ...\} | [kᵢ, vᵢ] ∈ x and |\{[k₀, v₀], [k₁, v₁], ...\}| ≤ n
  */
-export function take<K, V>(x: Lists<K, V>, n: number=1): Lists<K, V> {
+export function take<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
   var ks = iterableTake(keys(x), n);
   var vs = iterableTake(values(x), n);
   return [ks, vs];
@@ -407,7 +407,7 @@ export function take<K, V>(x: Lists<K, V>, n: number=1): Lists<K, V> {
  * @param n number of entries [1]
  * @returns \{[kₙ, vₙ], [kₙ₊₁, vₙ₊₁], ...\} | [kᵢ, vᵢ] ∈ x and |\{[kₙ, vₙ], [kₙ₊₁, vₙ₊₁], ...\}| ≤ max(|x| - n, 0)
  */
-export function drop<K, V>(x: Lists<K, V>, n: number=1): Lists<K, V> {
+export function drop<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
   var ks = iterableDrop(keys(x), n);
   var vs = iterableDrop(values(x), n);
   return [ks, vs];
@@ -422,82 +422,82 @@ export function drop<K, V>(x: Lists<K, V>, n: number=1): Lists<K, V> {
 
 /**
  * Count values which satisfy a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns Σtᵢ | tᵢ = 1 if ft(vᵢ) else 0; [kᵢ, vᵢ] ∈ x
  */
-export function count<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): number {
+export function count<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): number {
   return entriesCount(entries(x), ft as any);
 }
 
 
 /**
  * Count occurrences of values.
- * @param x lists
+ * @param x ilists
  * @param fm map function (v, k, x)
  * @returns Map \{value ⇒ count\}
  */
-export function countAs<K, V, W=V>(x: Lists<K, V>, fm: MapFunction<K, V, V|W> | null=null): Map<V|W, number> {
+export function countAs<K, V, W=V>(x: ILists<K, V>, fm: MapFunction<K, V, V|W> | null=null): Map<V|W, number> {
   return entriesCountAs(entries(x), fm as any);
 }
 
 
 /**
  * Find smallest value.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns v | v ≤ vᵢ; [kᵢ, vᵢ] ∈ x
  */
-export function min<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): V {
+export function min<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): V {
   return rangeEntries(x, fc, fm)[0][1];
 }
 
 
 /**
  * Find smallest entry.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns [min_key, min_value]
  */
-export function minEntry<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [K, V] {
+export function minEntry<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [K, V] {
   return rangeEntries(x, fc, fm)[0];
 }
 
 
 /**
  * Find largest value.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns v | v ≥ vᵢ; [kᵢ, vᵢ] ∈ x
  */
-export function max<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): V {
+export function max<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): V {
   return rangeEntries(x, fc, fm)[1][1];
 }
 
 
 /**
  * Find largest entry.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns [max_key, max_value]
  */
-export function maxEntry<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [K, V] {
+export function maxEntry<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [K, V] {
   return rangeEntries(x, fc, fm)[1];
 }
 
 
 /**
  * Find smallest and largest values.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns [min_value, max_value]
  */
-export function range<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [V, V] {
+export function range<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [V, V] {
   var [a, b] = rangeEntries(x, fc, fm);
   return [a[1], b[1]];
 }
@@ -505,12 +505,12 @@ export function range<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null
 
 /**
  * Find smallest and largest entries.
- * @param x lists
+ * @param x ilists
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns [min_entry, max_entry]
  */
-export function rangeEntries<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [[K, V], [K, V]] {
+export function rangeEntries<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [[K, V], [K, V]] {
   return entriesRangeEntries(entries(x), fc, fm as any);
 }
 
@@ -522,11 +522,11 @@ export function rangeEntries<K, V, W=V>(x: Lists<K, V>, fc: CompareFunction<V|W>
 
 /**
  * List all possible subsets.
- * @param x lists
+ * @param x ilists
  * @param n number of entries in each subset [-1 ⇒ any]
  * @returns entries selected by bit from 0..2^|x| if n<0; only of length n otherwise
  */
-export function* subsets<K, V>(x: Lists<K, V>, n: number=-1): Iterable<Lists<K, V>> {
+export function* subsets<K, V>(x: ILists<K, V>, n: number=-1): Iterable<ILists<K, V>> {
   for(var a of mapSubsets(mapFromLists(x), n))
     yield [a.keys(), a.values()];
 }
@@ -534,11 +534,11 @@ export function* subsets<K, V>(x: Lists<K, V>, n: number=-1): Iterable<Lists<K, 
 
 /**
  * Pick an arbitrary key.
- * @param x lists
+ * @param x ilists
  * @param fr random number generator ([0, 1))
  * @returns kᵢ | kᵢ ∈ x[0]
  */
-export function randomKey<K, V>(x: Lists<K, V>, fr: ReadFunction<number>=Math.random): K {
+export function randomKey<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): K {
   return arrayRandomValue([...keys(x)], fr);
 }
 export {randomKey as key};
@@ -546,11 +546,11 @@ export {randomKey as key};
 
 /**
  * Pick an arbitrary value.
- * @param x lists
+ * @param x ilists
  * @param fr random number generator ([0, 1))
  * @returns vᵢ | vᵢ ∈ x[1]
  */
-export function randomValue<K, V>(x: Lists<K, V>, fr: ReadFunction<number>=Math.random): V {
+export function randomValue<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): V {
   return arrayRandomValue([...values(x)], fr);
 }
 export {randomValue as value};
@@ -558,11 +558,11 @@ export {randomValue as value};
 
 /**
  * Pick an arbitrary entry.
- * @param x lists
+ * @param x ilists
  * @param fr random number generator ([0, 1))
  * @returns [kᵢ, vᵢ] | kᵢ ∈ x[0]; vᵢ ∈ x[1]
  */
-export function randomEntry<K, V>(x: Lists<K, V>, fr: ReadFunction<number>=Math.random): [K, V] {
+export function randomEntry<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): [K, V] {
   return arrayRandomValue([...entries(x)], fr);
 }
 export {randomEntry as entry};
@@ -570,12 +570,12 @@ export {randomEntry as entry};
 
 /**
  * Pick an arbitrary subset.
- * @param x lists
+ * @param x ilists
  * @param n number of entries [-1 ⇒ any]
  * @param fr random number generator ([0, 1))
  * @returns [[kᵢ, kⱼ, ...], [vᵢ, vⱼ, ...]] | kᵢ, kⱼ, ... ∈ x[0]; vᵢ, vⱼ, ... ∈ x[1]; |[kᵢ, kⱼ, , ...]| = |x| if n<0 else n
  */
-export function randomSubset<K, V>(x: Lists<K, V>, n: number=-1, fr: ReadFunction<number>=Math.random): Lists<K, V> {
+export function randomSubset<K, V>(x: ILists<K, V>, n: number=-1, fr: ReadFunction<number>=Math.random): ILists<K, V> {
   var a = mapRandomSubset(mapFromLists(x), n, fr);
   return [a.keys(), a.values()];
 }
@@ -588,38 +588,38 @@ export {randomSubset as subset};
 // ----
 
 /**
- * Check if lists has a key.
- * @param x lists
+ * Check if ilists has a key.
+ * @param x ilists
  * @param k search key
  * @returns k ∈ keys(x)?
  */
-export function has<K, V>(x: Lists<K, V>, k: K): boolean {
+export function has<K, V>(x: ILists<K, V>, k: K): boolean {
   return iterableHasValue(keys(x), k);
 }
 
 
 /**
- * Check if lists has a value.
- * @param x lists
+ * Check if ilists has a value.
+ * @param x ilists
  * @param v search value
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns v ∈ values(x)?
  */
-export function hasValue<K, V, W=V>(x: Lists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
+export function hasValue<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
   return searchValue(x, v, fc, fm)!==undefined;
 }
 
 
 /**
- * Check if lists has an entry.
- * @param x lists
+ * Check if ilists has an entry.
+ * @param x ilists
  * @param e search entry
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns k ∈ x[0]; v ∈ x[1]; k ⇒ v? | [k, v] = e
  */
-export function hasEntry<K, V, W=V>(x: Lists<K, V>, e: [K, V], fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
+export function hasEntry<K, V, W=V>(x: ILists<K, V>, e: [K, V], fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
   var fc = fc || COMPARE;
   var fm = fm || IDENTITY;
   var [k, v] = e, u = get(x, k);
@@ -630,84 +630,84 @@ export function hasEntry<K, V, W=V>(x: Lists<K, V>, e: [K, V], fc: CompareFuncti
 
 
 /**
- * Check if lists has a subset.
- * @param x lists
+ * Check if ilists has a subset.
+ * @param x ilists
  * @param y search subset
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns y ⊆ x?
  */
-export function hasSubset<K, V, W=V>(x: Lists<K, V>, y: Lists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
+export function hasSubset<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
   return mapHasSubset(mapFromLists(x), mapFromLists(y), fc, fm as any);
 }
 
 
 /**
  * Find first value passing a test (default order).
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns first v | ft(v) = true; [k, v] ∈ x
  */
-export function find<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): V {
+export function find<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): V {
   return entriesFind(entries(x), ft as any);
 }
 
 
 /**
  * Find values passing a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns v₀, v₁, ... | ft(vᵢ) = true; [kᵢ, vᵢ] ∈ x
  */
-export function findAll<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Iterable<V> {
+export function findAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterable<V> {
   return entriesFindAll(entries(x), ft as any);
 }
 
 
 /**
  * Finds key of an entry passing a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns key of entry
  */
-export function search<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): K {
+export function search<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): K {
   return entriesSearch(entries(x), ft as any);
 }
 
 
 /**
  * Find keys of entries passing a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns keys of entries
  */
-export function searchAll<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Iterable<K> {
+export function searchAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterable<K> {
   return entriesSearchAll(entries(x), ft as any);
 }
 
 
 /**
  * Find a key with given value.
- * @param x lists
+ * @param x ilists
  * @param v search value
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns key of value
  */
-export function searchValue<K, V, W=V>(x: Lists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): K {
+export function searchValue<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): K {
   return entriesSearchValue(entries(x), v, fc, fm as any);
 }
 
 
 /**
  * Find keys with given value.
- * @param x lists
+ * @param x ilists
  * @param v search value
  * @param fc compare function (a, b)
  * @param fm map function (v, k, x)
  * @returns keys of value
  */
-export function searchValueAll<K, V, W=V>(x: Lists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): Iterable<K> {
+export function searchValueAll<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): Iterable<K> {
   return entriesSearchValueAll(entries(x), v, fc, fm as any);
 }
 
@@ -719,21 +719,21 @@ export function searchValueAll<K, V, W=V>(x: Lists<K, V>, v: V, fc: CompareFunct
 
 /**
  * Call a function for each value.
- * @param x lists
+ * @param x ilists
  * @param fp process function (v, k, x)
  */
-export function forEach<K, V>(x: Lists<K, V>, fc: ProcessFunction<K, V>): void {
+export function forEach<K, V>(x: ILists<K, V>, fc: ProcessFunction<K, V>): void {
   entriesForEach(entries(x), fc as any);
 }
 
 
 /**
  * Check if any value satisfies a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns true if ft(vᵢ) = true for some [kᵢ, vᵢ] ∈ x
  */
-export function some<K, V>(x: Lists<K, V>, ft: TestFunction<K, V> | null=null): boolean {
+export function some<K, V>(x: ILists<K, V>, ft: TestFunction<K, V> | null=null): boolean {
   return entriesSome(entries(x), ft as any);
 }
 
@@ -744,18 +744,18 @@ export function some<K, V>(x: Lists<K, V>, ft: TestFunction<K, V> | null=null): 
  * @param ft test function (v, k, x)
  * @returns true if ft(vᵢ) = true for every [kᵢ, vᵢ] ∈ x
  */
-export function every<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): boolean {
+export function every<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): boolean {
   return entriesEvery(entries(x), ft as any);
 }
 
 
 /**
  * Transform values of entries.
- * @param x lists
+ * @param x ilists
  * @param fm map function (v, k, x)
  * @returns [k₀, fm(v₀)], [k₁, fm(v₁)], ... | [kᵢ, vᵢ] ∈ x
  */
-export function map<K, V, W>(x: Lists<K, V>, fm: MapFunction<K, V, W>) {
+export function map<K, V, W>(x: ILists<K, V>, fm: MapFunction<K, V, W>) {
   var ks = [], vs = [];
   for (var [k, v] of entries(x)) {
     ks.push(k);
@@ -767,12 +767,12 @@ export function map<K, V, W>(x: Lists<K, V>, fm: MapFunction<K, V, W>) {
 
 /**
  * Reduce values of entries to a single value.
- * @param x lists
+ * @param x ilists
  * @param fr reduce function (acc, v, k, x)
  * @param acc initial value
  * @returns fr(fr(acc, v₀), v₁)... | fr(acc, v₀) = v₀ if acc not given
  */
-export function reduce<K, V, W=V>(x: Lists<K, V>, fr: ReduceFunction<K, V, V|W>, acc?: V|W): V|W {
+export function reduce<K, V, W=V>(x: ILists<K, V>, fr: ReduceFunction<K, V, V|W>, acc?: V|W): V|W {
   var A = arguments.length, es = entries(x);
   return A>2? entriesReduce(es, fr as any, acc) : entriesReduce(es, fr as any);
 }
@@ -780,11 +780,11 @@ export function reduce<K, V, W=V>(x: Lists<K, V>, fr: ReduceFunction<K, V, V|W>,
 
 /**
  * Keep entries which pass a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns [k₀, v₀], [k₁, v₁], ... | ft(vᵢ) = true; [kᵢ, vᵢ] ∈ x
  */
-export function filter<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Lists<K, V> {
+export function filter<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): ILists<K, V> {
   var ks = [], vs = [];
   for (var [k, v] of entries(x))
     if (ft(v, k, x)) { ks.push(k); vs.push(v); }
@@ -794,11 +794,11 @@ export function filter<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Lists<K, V
 
 /**
  * Keep entries with given keys.
- * @param x lists
+ * @param x ilists
  * @param ks keys
  * @returns [k₀, v₀], [k₁, v₁], ... | kᵢ ∈ ks; [kᵢ, vᵢ] ∈ x
  */
-export function filterAt<K, V>(x: Lists<K, V>, ks: K[]): Lists<K, V> {
+export function filterAt<K, V>(x: ILists<K, V>, ks: K[]): ILists<K, V> {
   var js = [], us = [];
   for (var [k, v] of entries(x))
     if (ks.includes(k)) { js.push(k); us.push(v); }
@@ -808,11 +808,11 @@ export function filterAt<K, V>(x: Lists<K, V>, ks: K[]): Lists<K, V> {
 
 /**
  * Discard entries which pass a test.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns [k₀, v₀], [k₁, v₁], ... | ft(vᵢ) = false; [kᵢ, vᵢ] ∈ x
  */
-export function reject<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Lists<K, V> {
+export function reject<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): ILists<K, V> {
   var ks = [], vs = [];
   for (var [k, v] of entries(x))
     if (!ft(v, k, x)) { ks.push(k); vs.push(v); }
@@ -822,11 +822,11 @@ export function reject<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): Lists<K, V
 
 /**
  * Discard entries with given keys.
- * @param x lists
+ * @param x ilists
  * @param ks keys
  * @returns [k₀, v₀], [k₁, v₁], ... | kᵢ ∉ ks; [kᵢ, vᵢ] ∈ x
  */
-export function rejectAt<K, V>(x: Lists<K, V>, ks: K[]): Lists<K, V> {
+export function rejectAt<K, V>(x: ILists<K, V>, ks: K[]): ILists<K, V> {
   var js = [], us = [];
   for (var [k, v] of entries(x))
     if (!ks.includes(k)) { js.push(k); us.push(v); }
@@ -835,21 +835,21 @@ export function rejectAt<K, V>(x: Lists<K, V>, ks: K[]): Lists<K, V> {
 
 
 /**
- * Flatten nested lists to given depth.
- * @param x nested lists
+ * Flatten nested ilists to given depth.
+ * @param x nested ilists
  * @param n maximum depth [-1 ⇒ all]
  * @param fm map function (v, k, x)
  * @param ft test function for flatten (v, k, x) [is]
- * @returns flat lists
+ * @returns flat ilists
  */
-export function flat<K>(x: Lists<K, any>, n: number=-1, fm: MapFunction<K, any, any> | null=null, ft: TestFunction<K, any> | null=null): Lists<K, any> {
+export function flat<K>(x: ILists<K, any>, n: number=-1, fm: MapFunction<K, any, any> | null=null, ft: TestFunction<K, any> | null=null): ILists<K, any> {
   var fm = fm || IDENTITY;
   var ft = ft || is;
   var a = flatTo$(new Map(), x, n, fm, ft);
   return [a.keys(), a.values()];
 }
 
-function flatTo$<K>(a: Map<K, any>, x: Lists<K, any>, n: number, fm: MapFunction<K, any, any>, ft: TestFunction<K, any>): Map<K, any> {
+function flatTo$<K>(a: Map<K, any>, x: ILists<K, any>, n: number, fm: MapFunction<K, any, any>, ft: TestFunction<K, any>): Map<K, any> {
   for (var [k, v] of entries(x)) {
     var v1 = fm(v, k, x);
     if (n!==0 && ft(v1, k, x)) flatTo$(a, v1, n-1, fm, ft);
@@ -860,13 +860,13 @@ function flatTo$<K>(a: Map<K, any>, x: Lists<K, any>, n: number, fm: MapFunction
 
 
 /**
- * Flatten nested lists, based on map function.
- * @param x nested lists
+ * Flatten nested ilists, based on map function.
+ * @param x nested ilists
  * @param fm map function (v, k, x)
  * @param ft test function for flatten (v, k, x) [is]
- * @returns flat lists
+ * @returns flat ilists
  */
-export function flatMap<K>(x: Lists<K, any>, fm: MapFunction<K, any, any> | null=null, ft: TestFunction<K, any> | null=null): Lists<K, any> {
+export function flatMap<K>(x: ILists<K, any>, fm: MapFunction<K, any, any> | null=null, ft: TestFunction<K, any> | null=null): ILists<K, any> {
   var fm = fm || IDENTITY;
   var ft = ft || is;
   var a  = new Map();
@@ -880,14 +880,14 @@ export function flatMap<K>(x: Lists<K, any>, fm: MapFunction<K, any, any> | null
 
 
 /**
- * Combine matching entries from all lists.
- * @param xs all lists
+ * Combine matching entries from all ilists.
+ * @param xs all ilists
  * @param fm map function (vs, k)
  * @param ft end function (dones) [some]
  * @param vd default value
  * @returns fm([x₀[k₀], x₁[k₀], ...]), fm([x₀[k₁], x₁[k₁], ...]), ...
  */
-export function zip<K, V, W=V>(xs: Lists<K, V>[], fm: MapFunction<K, V[], V[]|W> | null=null, ft: EndFunction=null, vd?: V): Lists<K, V[]|W> {
+export function zip<K, V, W=V>(xs: ILists<K, V>[], fm: MapFunction<K, V[], V[]|W> | null=null, ft: EndFunction=null, vd?: V): ILists<K, V[]|W> {
   var a = mapZip(xs.map(x => new Map(entries(x))), fm as any, ft, vd);
   return [a.keys(), a.values() as any];
 }
@@ -900,11 +900,11 @@ export function zip<K, V, W=V>(xs: Lists<K, V>[], fm: MapFunction<K, V[], V[]|W>
 
 /**
  * Segregate values by test result.
- * @param x lists
+ * @param x ilists
  * @param ft test function (v, k, x)
  * @returns [satisfies, doesnt]
  */
-export function partition<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): [Lists<K, V>, Lists<K, V>] {
+export function partition<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): [ILists<K, V>, ILists<K, V>] {
   var tk = [], tv = [], fk = [], fv = [];
   for (var [k, v] of entries(x)) {
     if (ft(v, k, x)) { tk.push(k); tv.push(v); }
@@ -920,7 +920,7 @@ export function partition<K, V>(x: Lists<K, V>, ft: TestFunction<K, V>): [Lists<
  * @param fm map function (v, k, x)
  * @returns Map \{key ⇒ entries\}
  */
-export function partitionAs<K, V, W=V>(x: Lists<K, V>, fm: MapFunction<K, V, V|W> | null=null): Map<V|W, Lists<K, V>> {
+export function partitionAs<K, V, W=V>(x: ILists<K, V>, fm: MapFunction<K, V, V|W> | null=null): Map<V|W, ILists<K, V>> {
   var fm = fm || IDENTITY;
   var a  = new Map();
   for (var [k, v] of entries(x)) {
@@ -934,16 +934,16 @@ export function partitionAs<K, V, W=V>(x: Lists<K, V>, fm: MapFunction<K, V, V|W
 
 
 /**
- * Break lists into chunks of given size.
- * @param x lists
+ * Break ilists into chunks of given size.
+ * @param x ilists
  * @param n chunk size [1]
  * @param s chunk step [n]
  * @returns [x[0..n], x[s..s+n], x[2s..2s+n], ...]
  */
-export function chunk<K, V>(x: Lists<K, V>, n: number=1, s: number=n): Lists<K, V>[] {
+export function chunk<K, V>(x: ILists<K, V>, n: number=1, s: number=n): ILists<K, V>[] {
   var kss = arrayChunk([...keys(x)], n, s);
   var vss = arrayChunk([...values(x)], n, s);
-  return arrayZip([kss, vss as any]) as Lists<K, V>[];
+  return arrayZip([kss, vss as any]) as ILists<K, V>[];
 }
 
 
@@ -953,11 +953,11 @@ export function chunk<K, V>(x: Lists<K, V>, n: number=1, s: number=n): Lists<K, 
 // -------
 
 /**
- * Append entries from all lists, preferring last.
- * @param xs all lists
+ * Append entries from all ilists, preferring last.
+ * @param xs all ilists
  * @returns x₀ ∪ x₁ ∪ ... | [x₀, x₁, ...] = xs
  */
-export function concat<K, V>(...xs: Lists<K, V>[]): Lists<K, V> {
+export function concat<K, V>(...xs: ILists<K, V>[]): ILists<K, V> {
   var ks = iterableConcat(...xs.map(keys));
   var vs = iterableConcat(...xs.map(values));
   var a  = mapFromLists([ks, vs]);
@@ -966,13 +966,13 @@ export function concat<K, V>(...xs: Lists<K, V>[]): Lists<K, V> {
 
 
 /**
- * Join lists together into a string.
- * @param x lists
+ * Join ilists together into a string.
+ * @param x ilists
  * @param sep separator [,]
  * @param asc associator [=]
  * @returns "$\{k₀\}=$\{v₀\},$\{k₁\}=$\{v₁\}..." | [kᵢ, vᵢ] ∈ x
  */
-export function join<K, V>(x: Lists<K, V>, sep: string=',', asc: string='='): string {
+export function join<K, V>(x: ILists<K, V>, sep: string=',', asc: string='='): string {
   return entriesJoin(entries(x), sep, asc);
 }
 
@@ -983,59 +983,59 @@ export function join<K, V>(x: Lists<K, V>, sep: string=',', asc: string='='): st
 // --------------
 
 /**
- * Check if lists have no common keys.
- * @param x lists
- * @param y another lists
+ * Check if ilists have no common keys.
+ * @param x ilists
+ * @param y another ilists
  * @returns x ∩ y = Φ?
  */
-export function isDisjoint<K, V>(x: Lists<K, V>, y: Lists<K, V>): boolean {
+export function isDisjoint<K, V>(x: ILists<K, V>, y: ILists<K, V>): boolean {
   return setIsDisjoint(new Set(keys(x)), keys(y));
 }
 
 
 /**
- * Obtain keys present in any lists.
- * @param xs all lists
+ * Obtain keys present in any ilists.
+ * @param xs all ilists
  * @returns \{k₀, k₁, ...\} | [kᵢ, vᵢ] ∈ x₀ ∪ x₁, ...; [x₀, x₁, ...] = xs
  */
-export function unionKeys<K, V>(...xs: Lists<K, V>[]): Set<K> {
+export function unionKeys<K, V>(...xs: ILists<K, V>[]): Set<K> {
   return setConcat(...xs.map(x => new Set(keys(x))));
 }
 
 
 /**
- * Obtain entries present in any lists.
- * @param x lists
- * @param y another lists
+ * Obtain entries present in any ilists.
+ * @param x ilists
+ * @param y another ilists
  * @param fc combine function (a, b)
  * @returns x ∪ y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x or [kᵢ, vᵢ] ∈ y\}
  */
-export function union<K, V>(x: Lists<K, V>, y: Lists<K, V>, fc: CombineFunction<V> | null=null): Lists<K, V> {
+export function union<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: CombineFunction<V> | null=null): ILists<K, V> {
   var a = mapUnion(entries(x), entries(y), fc);
   return [a.keys(), a.values()];
 }
 
 
 /**
- * Obtain entries present in both lists.
- * @param x lists
- * @param y another lists
+ * Obtain entries present in both ilists.
+ * @param x ilists
+ * @param y another ilists
  * @param fc combine function (a, b)
  * @returns x ∩ y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x and [kᵢ, vᵢ] ∈ y\}
  */
-export function intersection<K, V>(x: Lists<K, V>, y: Lists<K, V>, fc: CombineFunction<V> | null=null): Lists<K, V> {
+export function intersection<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: CombineFunction<V> | null=null): ILists<K, V> {
   var a = mapIntersection(new Map(entries(x)), entries(y), fc);
   return [a.keys(), a.values()];
 }
 
 
 /**
- * Obtain entries not present in another lists.
- * @param x lists
- * @param y another lists
+ * Obtain entries not present in another ilists.
+ * @param x ilists
+ * @param y another ilists
  * @returns x = x - y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x, [kᵢ, *] ∉ y\}
  */
-export function difference<K, V>(x: Lists<K, V>, y: Lists<K, V>): Lists<K, V> {
+export function difference<K, V>(x: ILists<K, V>, y: ILists<K, V>): ILists<K, V> {
   var a = mapFromLists(x);
   for (var k of keys(y))
     a.delete(k);
@@ -1044,12 +1044,12 @@ export function difference<K, V>(x: Lists<K, V>, y: Lists<K, V>): Lists<K, V> {
 
 
 /**
- * Obtain entries not present in both lists.
- * @param x lists
- * @param y another lists
+ * Obtain entries not present in both ilists.
+ * @param x ilists
+ * @param y another ilists
  * @returns x = x-y ∪ y-x
  */
-export function symmetricDifference<K, V>(x: Lists<K, V>, y: Lists<K, V>): Lists<K, V> {
+export function symmetricDifference<K, V>(x: ILists<K, V>, y: ILists<K, V>): ILists<K, V> {
   var a = mapSymmetricDifference(entries(x), entries(y));
   return [a.keys(), a.values()];
 }
