@@ -2,59 +2,11 @@ import {
   IDENTITY,
   COMPARE,
 } from "extra-function";
-import {
-  isList   as iterableIsList,
-  length   as iterableLength,
-  isEmpty  as iterableIsEmpty,
-  many     as iterableMany,
-  head     as iterableHead,
-  take     as iterableTake,
-  drop     as iterableDrop,
-  hasValue as iterableHasValue,
-  map      as iterableMap,
-  concat   as iterableConcat,
-} from "extra-iterable";
-import {
-  randomValue as arrayRandomValue,
-  zip         as arrayZip,
-  chunk       as arrayChunk,
-} from "extra-array";
-import {
-  isDisjoint  as setIsDisjoint,
-  concat      as setConcat,
-} from "extra-set";
-import {
-  keys           as entriesKeys,
-  values         as entriesValues,
-  get            as entriesGet,
-  count          as entriesCount,
-  countAs        as entriesCountAs,
-  rangeEntries   as entriesRangeEntries,
-  find           as entriesFind,
-  findAll        as entriesFindAll,
-  search         as entriesSearch,
-  searchAll      as entriesSearchAll,
-  searchValue    as entriesSearchValue,
-  searchValueAll as entriesSearchValueAll,
-  forEach        as entriesForEach,
-  some           as entriesSome,
-  every          as entriesEvery,
-  reduce         as entriesReduce,
-  join           as entriesJoin,
-} from "extra-entries";
-import {
-  fromLists    as mapFromLists,
-  compare      as mapCompare,
-  getAll       as mapGetAll,
-  subsets      as mapSubsets,
-  randomSubset as mapRandomSubset,
-  hasSubset    as mapHasSubset,
-  zip          as mapZip,
-  concat$      as mapConcat$,
-  union        as mapUnion,
-  intersection as mapIntersection,
-  symmetricDifference as mapSymmetricDifference,
-} from "extra-map";
+import * as xiterable from "extra-iterable";
+import * as xarray    from "extra-array";
+import * as xset      from "extra-set";
+import * as xentries  from "extra-entries";
+import * as xmap      from "extra-map";
 
 
 
@@ -155,7 +107,7 @@ export type EndFunction = (dones: boolean[]) => boolean;
  * @returns v is ilists?
  */
 export function is<K, V>(v: any): v is ILists<K, V> {
-  return Array.isArray(v) && v.length===2 && iterableIsList(v[0]) && iterableIsList(v[1]);
+  return Array.isArray(v) && v.length===2 && xiterable.isList(v[0]) && xiterable.isList(v[1]);
 }
 
 
@@ -202,8 +154,8 @@ export function* entries<K, V>(x: ILists<K, V>): Entries<K, V> {
  * @returns x as ilists
  */
 export function fromEntries<K, V>(x: Entries<K, V>): ILists<K, V> {
-  var ex = iterableMany(x);
-  return [entriesKeys(ex), entriesValues(ex)];
+  var ex = xiterable.many(x);
+  return [xentries.keys(ex), xentries.values(ex)];
 }
 
 
@@ -218,7 +170,7 @@ export function fromEntries<K, V>(x: Entries<K, V>): ILists<K, V> {
  * @returns |x|
  */
 export function size<K, V>(x: ILists<K, V>): number {
-  return iterableLength(keys(x));
+  return xiterable.length(keys(x));
 }
 export {size as length};
 
@@ -229,7 +181,7 @@ export {size as length};
  * @returns |x| = 0?
  */
 export function isEmpty<K, V>(x: ILists<K, V>): boolean {
-  return iterableIsEmpty(keys(x));
+  return xiterable.isEmpty(keys(x));
 }
 
 
@@ -247,7 +199,7 @@ export function isEmpty<K, V>(x: ILists<K, V>): boolean {
  * @returns x=y: 0, otherwise: -ve/+ve
  */
 export function compare<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): number {
-  return mapCompare(mapFromLists(x), mapFromLists(y), fc, fm as any);
+  return xmap.compare(xmap.fromLists(x), xmap.fromLists(y), fc, fm as any);
 }
 
 
@@ -276,7 +228,7 @@ export function isEqual<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: Compare
  * @returns x[k]
  */
 export function get<K, V>(x: ILists<K, V>, k: K): V {
-  return entriesGet(entries(x), k);
+  return xentries.get(entries(x), k);
 }
 
 
@@ -287,7 +239,7 @@ export function get<K, V>(x: ILists<K, V>, k: K): V {
  * @returns x[k₀], x[k₁], ... | [k₀, k₁, ...] = ks
  */
 export function getAll<K, V>(x: ILists<K, V>, ks: K[]): Iterable<V> {
-  return mapGetAll(mapFromLists(x), ks);
+  return xmap.getAll(xmap.fromLists(x), ks);
 }
 
 
@@ -340,7 +292,7 @@ export function set<K, V>(x: ILists<K, V>, k: K, v: V): ILists<K, V> {
  * @returns x' | x' = x; x'[k] = x[l]; x'[l] = x[k]
  */
 export function swap<K, V>(x: ILists<K, V>, k: K, l: K): ILists<K, V> {
-  var ks = iterableMap(keys(x), j => j===k? l : (j===l? k : j));
+  var ks = xiterable.map(keys(x), j => j===k? l : (j===l? k : j));
   return [ks, values(x)];
 }
 
@@ -374,7 +326,7 @@ export function remove<K, V>(x: ILists<K, V>, k: K): ILists<K, V> {
  * @returns [k₀, v₀] if x ≠ Φ else ed | [k₀, v₀] ∈ x
  */
 export function head<K, V>(x: ILists<K, V>, ed: [K, V]=[] as any): [K, V] {
-  return iterableHead(entries(x), ed);
+  return xiterable.head(entries(x), ed);
 }
 
 
@@ -395,8 +347,8 @@ export function tail<K, V>(x: ILists<K, V>): ILists<K, V> {
  * @returns \{[k₀, v₀], [k₁, v₁], ...\} | [kᵢ, vᵢ] ∈ x and |\{[k₀, v₀], [k₁, v₁], ...\}| ≤ n
  */
 export function take<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
-  var ks = iterableTake(keys(x), n);
-  var vs = iterableTake(values(x), n);
+  var ks = xiterable.take(keys(x), n);
+  var vs = xiterable.take(values(x), n);
   return [ks, vs];
 }
 
@@ -408,8 +360,8 @@ export function take<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
  * @returns \{[kₙ, vₙ], [kₙ₊₁, vₙ₊₁], ...\} | [kᵢ, vᵢ] ∈ x and |\{[kₙ, vₙ], [kₙ₊₁, vₙ₊₁], ...\}| ≤ max(|x| - n, 0)
  */
 export function drop<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
-  var ks = iterableDrop(keys(x), n);
-  var vs = iterableDrop(values(x), n);
+  var ks = xiterable.drop(keys(x), n);
+  var vs = xiterable.drop(values(x), n);
   return [ks, vs];
 }
 
@@ -427,7 +379,7 @@ export function drop<K, V>(x: ILists<K, V>, n: number=1): ILists<K, V> {
  * @returns Σtᵢ | tᵢ = 1 if ft(vᵢ) else 0; [kᵢ, vᵢ] ∈ x
  */
 export function count<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): number {
-  return entriesCount(entries(x), ft as any);
+  return xentries.count(entries(x), ft as any);
 }
 
 
@@ -438,7 +390,7 @@ export function count<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): number {
  * @returns Map \{value ⇒ count\}
  */
 export function countAs<K, V, W=V>(x: ILists<K, V>, fm: MapFunction<K, V, V|W> | null=null): Map<V|W, number> {
-  return entriesCountAs(entries(x), fm as any);
+  return xentries.countAs(entries(x), fm as any);
 }
 
 
@@ -511,7 +463,7 @@ export function range<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | nul
  * @returns [min_entry, max_entry]
  */
 export function rangeEntries<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): [[K, V], [K, V]] {
-  return entriesRangeEntries(entries(x), fc, fm as any);
+  return xentries.rangeEntries(entries(x), fc, fm as any);
 }
 
 
@@ -527,7 +479,7 @@ export function rangeEntries<K, V, W=V>(x: ILists<K, V>, fc: CompareFunction<V|W
  * @returns entries selected by bit from 0..2^|x| if n<0; only of length n otherwise
  */
 export function* subsets<K, V>(x: ILists<K, V>, n: number=-1): Iterable<ILists<K, V>> {
-  for(var a of mapSubsets(mapFromLists(x), n))
+  for(var a of xmap.subsets(xmap.fromLists(x), n))
     yield [a.keys(), a.values()];
 }
 
@@ -539,7 +491,7 @@ export function* subsets<K, V>(x: ILists<K, V>, n: number=-1): Iterable<ILists<K
  * @returns kᵢ | kᵢ ∈ x[0]
  */
 export function randomKey<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): K {
-  return arrayRandomValue([...keys(x)], fr);
+  return xarray.randomValue([...keys(x)], fr);
 }
 export {randomKey as key};
 
@@ -551,7 +503,7 @@ export {randomKey as key};
  * @returns vᵢ | vᵢ ∈ x[1]
  */
 export function randomValue<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): V {
-  return arrayRandomValue([...values(x)], fr);
+  return xarray.randomValue([...values(x)], fr);
 }
 export {randomValue as value};
 
@@ -563,7 +515,7 @@ export {randomValue as value};
  * @returns [kᵢ, vᵢ] | kᵢ ∈ x[0]; vᵢ ∈ x[1]
  */
 export function randomEntry<K, V>(x: ILists<K, V>, fr: ReadFunction<number>=Math.random): [K, V] {
-  return arrayRandomValue([...entries(x)], fr);
+  return xarray.randomValue([...entries(x)], fr);
 }
 export {randomEntry as entry};
 
@@ -576,7 +528,7 @@ export {randomEntry as entry};
  * @returns [[kᵢ, kⱼ, ...], [vᵢ, vⱼ, ...]] | kᵢ, kⱼ, ... ∈ x[0]; vᵢ, vⱼ, ... ∈ x[1]; |[kᵢ, kⱼ, , ...]| = |x| if n<0 else n
  */
 export function randomSubset<K, V>(x: ILists<K, V>, n: number=-1, fr: ReadFunction<number>=Math.random): ILists<K, V> {
-  var a = mapRandomSubset(mapFromLists(x), n, fr);
+  var a = xmap.randomSubset(xmap.fromLists(x), n, fr);
   return [a.keys(), a.values()];
 }
 export {randomSubset as subset};
@@ -594,7 +546,7 @@ export {randomSubset as subset};
  * @returns k ∈ keys(x)?
  */
 export function has<K, V>(x: ILists<K, V>, k: K): boolean {
-  return iterableHasValue(keys(x), k);
+  return xiterable.hasValue(keys(x), k);
 }
 
 
@@ -638,7 +590,7 @@ export function hasEntry<K, V, W=V>(x: ILists<K, V>, e: [K, V], fc: CompareFunct
  * @returns y ⊆ x?
  */
 export function hasSubset<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): boolean {
-  return mapHasSubset(mapFromLists(x), mapFromLists(y), fc, fm as any);
+  return xmap.hasSubset(xmap.fromLists(x), xmap.fromLists(y), fc, fm as any);
 }
 
 
@@ -649,7 +601,7 @@ export function hasSubset<K, V, W=V>(x: ILists<K, V>, y: ILists<K, V>, fc: Compa
  * @returns first v | ft(v) = true; [k, v] ∈ x
  */
 export function find<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): V {
-  return entriesFind(entries(x), ft as any);
+  return xentries.find(entries(x), ft as any);
 }
 
 
@@ -660,7 +612,7 @@ export function find<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): V {
  * @returns v₀, v₁, ... | ft(vᵢ) = true; [kᵢ, vᵢ] ∈ x
  */
 export function findAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterable<V> {
-  return entriesFindAll(entries(x), ft as any);
+  return xentries.findAll(entries(x), ft as any);
 }
 
 
@@ -671,7 +623,7 @@ export function findAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterable
  * @returns key of entry
  */
 export function search<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): K {
-  return entriesSearch(entries(x), ft as any);
+  return xentries.search(entries(x), ft as any);
 }
 
 
@@ -682,7 +634,7 @@ export function search<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): K {
  * @returns keys of entries
  */
 export function searchAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterable<K> {
-  return entriesSearchAll(entries(x), ft as any);
+  return xentries.searchAll(entries(x), ft as any);
 }
 
 
@@ -695,7 +647,7 @@ export function searchAll<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): Iterab
  * @returns key of value
  */
 export function searchValue<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): K {
-  return entriesSearchValue(entries(x), v, fc, fm as any);
+  return xentries.searchValue(entries(x), v, fc, fm as any);
 }
 
 
@@ -708,7 +660,7 @@ export function searchValue<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunctio
  * @returns keys of value
  */
 export function searchValueAll<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunction<V|W> | null=null, fm: MapFunction<K, V, V|W> | null=null): Iterable<K> {
-  return entriesSearchValueAll(entries(x), v, fc, fm as any);
+  return xentries.searchValueAll(entries(x), v, fc, fm as any);
 }
 
 
@@ -723,7 +675,7 @@ export function searchValueAll<K, V, W=V>(x: ILists<K, V>, v: V, fc: CompareFunc
  * @param fp process function (v, k, x)
  */
 export function forEach<K, V>(x: ILists<K, V>, fc: ProcessFunction<K, V>): void {
-  entriesForEach(entries(x), fc as any);
+  xentries.forEach(entries(x), fc as any);
 }
 
 
@@ -734,7 +686,7 @@ export function forEach<K, V>(x: ILists<K, V>, fc: ProcessFunction<K, V>): void 
  * @returns true if ft(vᵢ) = true for some [kᵢ, vᵢ] ∈ x
  */
 export function some<K, V>(x: ILists<K, V>, ft: TestFunction<K, V> | null=null): boolean {
-  return entriesSome(entries(x), ft as any);
+  return xentries.some(entries(x), ft as any);
 }
 
 
@@ -745,7 +697,7 @@ export function some<K, V>(x: ILists<K, V>, ft: TestFunction<K, V> | null=null):
  * @returns true if ft(vᵢ) = true for every [kᵢ, vᵢ] ∈ x
  */
 export function every<K, V>(x: ILists<K, V>, ft: TestFunction<K, V>): boolean {
-  return entriesEvery(entries(x), ft as any);
+  return xentries.every(entries(x), ft as any);
 }
 
 
@@ -774,7 +726,7 @@ export function map<K, V, W>(x: ILists<K, V>, fm: MapFunction<K, V, W>) {
  */
 export function reduce<K, V, W=V>(x: ILists<K, V>, fr: ReduceFunction<K, V, V|W>, acc?: V|W): V|W {
   var A = arguments.length, es = entries(x);
-  return A>2? entriesReduce(es, fr as any, acc) : entriesReduce(es, fr as any);
+  return A>2? xentries.reduce(es, fr as any, acc) : xentries.reduce(es, fr as any);
 }
 
 
@@ -872,7 +824,7 @@ export function flatMap<K>(x: ILists<K, any>, fm: MapFunction<K, any, any> | nul
   var a  = new Map();
   for (var [k, v] of entries(x)) {
     var w = fm(v, k, x);
-    if (ft(w, k, x)) mapConcat$(a, entries(w));
+    if (ft(w, k, x)) xmap.concat$(a, entries(w));
     else a.set(k, w);
   }
   return [a.keys(), a.values()];
@@ -888,7 +840,7 @@ export function flatMap<K>(x: ILists<K, any>, fm: MapFunction<K, any, any> | nul
  * @returns fm([x₀[k₀], x₁[k₀], ...]), fm([x₀[k₁], x₁[k₁], ...]), ...
  */
 export function zip<K, V, W=V>(xs: ILists<K, V>[], fm: MapFunction<K, V[], V[]|W> | null=null, ft: EndFunction=null, vd?: V): ILists<K, V[]|W> {
-  var a = mapZip(xs.map(x => new Map(entries(x))), fm as any, ft, vd);
+  var a = xmap.zip(xs.map(x => new Map(entries(x))), fm as any, ft, vd);
   return [a.keys(), a.values() as any];
 }
 
@@ -941,9 +893,9 @@ export function partitionAs<K, V, W=V>(x: ILists<K, V>, fm: MapFunction<K, V, V|
  * @returns [x[0..n], x[s..s+n], x[2s..2s+n], ...]
  */
 export function chunk<K, V>(x: ILists<K, V>, n: number=1, s: number=n): ILists<K, V>[] {
-  var kss = arrayChunk([...keys(x)], n, s);
-  var vss = arrayChunk([...values(x)], n, s);
-  return arrayZip([kss, vss as any]) as ILists<K, V>[];
+  var kss = xarray.chunk([...keys(x)], n, s);
+  var vss = xarray.chunk([...values(x)], n, s);
+  return xarray.zip([kss, vss as any]) as ILists<K, V>[];
 }
 
 
@@ -958,9 +910,9 @@ export function chunk<K, V>(x: ILists<K, V>, n: number=1, s: number=n): ILists<K
  * @returns x₀ ∪ x₁ ∪ ... | [x₀, x₁, ...] = xs
  */
 export function concat<K, V>(...xs: ILists<K, V>[]): ILists<K, V> {
-  var ks = iterableConcat(...xs.map(keys));
-  var vs = iterableConcat(...xs.map(values));
-  var a  = mapFromLists([ks, vs]);
+  var ks = xiterable.concat(...xs.map(keys));
+  var vs = xiterable.concat(...xs.map(values));
+  var a  = xmap.fromLists([ks, vs]);
   return [a.keys(), a.values()];
 }
 
@@ -973,7 +925,7 @@ export function concat<K, V>(...xs: ILists<K, V>[]): ILists<K, V> {
  * @returns "$\{k₀\}=$\{v₀\},$\{k₁\}=$\{v₁\}..." | [kᵢ, vᵢ] ∈ x
  */
 export function join<K, V>(x: ILists<K, V>, sep: string=',', asc: string='='): string {
-  return entriesJoin(entries(x), sep, asc);
+  return xentries.join(entries(x), sep, asc);
 }
 
 
@@ -989,7 +941,7 @@ export function join<K, V>(x: ILists<K, V>, sep: string=',', asc: string='='): s
  * @returns x ∩ y = Φ?
  */
 export function isDisjoint<K, V>(x: ILists<K, V>, y: ILists<K, V>): boolean {
-  return setIsDisjoint(new Set(keys(x)), keys(y));
+  return xset.isDisjoint(new Set(keys(x)), keys(y));
 }
 
 
@@ -999,7 +951,7 @@ export function isDisjoint<K, V>(x: ILists<K, V>, y: ILists<K, V>): boolean {
  * @returns \{k₀, k₁, ...\} | [kᵢ, vᵢ] ∈ x₀ ∪ x₁, ...; [x₀, x₁, ...] = xs
  */
 export function unionKeys<K, V>(...xs: ILists<K, V>[]): Set<K> {
-  return setConcat(...xs.map(x => new Set(keys(x))));
+  return xset.concat(...xs.map(x => new Set(keys(x))));
 }
 
 
@@ -1011,7 +963,7 @@ export function unionKeys<K, V>(...xs: ILists<K, V>[]): Set<K> {
  * @returns x ∪ y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x or [kᵢ, vᵢ] ∈ y\}
  */
 export function union<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: CombineFunction<V> | null=null): ILists<K, V> {
-  var a = mapUnion(entries(x), entries(y), fc);
+  var a = xmap.union(entries(x), entries(y), fc);
   return [a.keys(), a.values()];
 }
 
@@ -1024,7 +976,7 @@ export function union<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: CombineFunctio
  * @returns x ∩ y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x and [kᵢ, vᵢ] ∈ y\}
  */
 export function intersection<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: CombineFunction<V> | null=null): ILists<K, V> {
-  var a = mapIntersection(new Map(entries(x)), entries(y), fc);
+  var a = xmap.intersection(new Map(entries(x)), entries(y), fc);
   return [a.keys(), a.values()];
 }
 
@@ -1036,7 +988,7 @@ export function intersection<K, V>(x: ILists<K, V>, y: ILists<K, V>, fc: Combine
  * @returns x = x - y = \{[kᵢ, vᵢ] | [kᵢ, vᵢ] ∈ x, [kᵢ, *] ∉ y\}
  */
 export function difference<K, V>(x: ILists<K, V>, y: ILists<K, V>): ILists<K, V> {
-  var a = mapFromLists(x);
+  var a = xmap.fromLists(x);
   for (var k of keys(y))
     a.delete(k);
   return [a.keys(), a.values()];
@@ -1050,6 +1002,6 @@ export function difference<K, V>(x: ILists<K, V>, y: ILists<K, V>): ILists<K, V>
  * @returns x = x-y ∪ y-x
  */
 export function symmetricDifference<K, V>(x: ILists<K, V>, y: ILists<K, V>): ILists<K, V> {
-  var a = mapSymmetricDifference(entries(x), entries(y));
+  var a = xmap.symmetricDifference(entries(x), entries(y));
   return [a.keys(), a.values()];
 }

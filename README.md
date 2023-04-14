@@ -19,7 +19,7 @@ upon it. Except `fromEntries()`, all functions take **ILists** as their first
 parameter.
 
 This package is available in *Node.js* and *Web* formats. To use it on the web,
-simply use the `extra_lists` global variable after loading with a `<script>` tag
+simply use the `extra_ilists` global variable after loading with a `<script>` tag
 from the [jsDelivr CDN].
 
 > Stability: [Experimental](https://www.youtube.com/watch?v=L1j93RnIxEo).
@@ -31,24 +31,24 @@ from the [jsDelivr CDN].
 <br>
 
 ```javascript
-const ilists = require('extra-ilists');
-// import * as ilists from 'extra-ilists';
-// import * as ilists from 'https://unpkg.com/extra-ilists/index.mjs'; (deno)
+const xilists = require('extra-ilists');
+// import * as xilists from 'extra-ilists';
+// import * as xilists from 'https://unpkg.com/extra-ilists/index.mjs'; (deno)
 
 var x = [['a', 'b', 'c', 'd', 'e'], [1, 2, 3, 4, 5]];
-ilists.filter(x, v => v % 2 === 1);
+xilists.filter(x, v => v % 2 === 1);
 // → [ [ 'a', 'c', 'e' ], [ 1, 3, 5 ] ]
 
 var x = [['a', 'b', 'c', 'd'], [1, 2, -3, -4]];
-ilists.some(x, v => v > 10);
+xilists.some(x, v => v > 10);
 // → false
 
 var x = [['a', 'b', 'c', 'd'], [1, 2, -3, -4]];
-ilists.min(x);
+xilists.min(x);
 // → -4
 
 var x = [['a', 'b', 'c'], [1, 2, 3]];
-[...ilists.subsets(x)].map(a => [[...a[0]], [...a[1]]]);
+[...xilists.subsets(x)].map(a => [[...a[0]], [...a[1]]]);
 // → [
 // →   [ [], [] ],
 // →   [ [ 'a' ], [ 1 ] ],
