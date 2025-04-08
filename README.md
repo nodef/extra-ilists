@@ -157,7 +157,7 @@ var x = [['a', 'b', 'c'], [1, 2, 3]];
 [![Coverage Status](https://coveralls.io/repos/github/nodef/extra-ilists/badge.svg?branch=master)](https://coveralls.io/github/nodef/extra-ilists?branch=master)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/05f0ff38d69efa93ebbd/test_coverage)](https://codeclimate.com/github/nodef/extra-ilists/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/05f0ff38d69efa93ebbd/maintainability)](https://codeclimate.com/github/nodef/extra-ilists/maintainability)
-
+![](https://ga-beacon.deno.dev/G-RC63DPBH3P:SH3Eq-NoQ9mwgYeHWxu7cw/github.com/nodef/extra-ilists)
 
 [is]: https://github.com/nodef/extra-ilists/wiki/is
 [keys]: https://github.com/nodef/extra-ilists/wiki/keys
